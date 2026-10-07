@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
-  const mongoUri = process.env.MONGODB_URI || (process.env.NODE_ENV === 'development' ? 'mongodb://127.0.0.1:27017/careconnect' : null);
+  const mongoUri = process.env.DB_URL || process.env.MONGODB_URI;
 
   if (!mongoUri) {
-    console.error('[MongoDB] MONGODB_URI is missing. Set it in your environment before starting the app.');
+    console.error('[MongoDB] DB_URL / MONGODB_URI is missing. Set it in your environment before starting the app.');
     process.exit(1);
   }
 

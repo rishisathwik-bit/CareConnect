@@ -17,7 +17,12 @@ const AuditLog = require('../models/AuditLog');
 
 const seedData = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/careconnect';
+    const mongoUri = process.env.DB_URL || process.env.MONGODB_URI;
+
+    if (!mongoUri) {
+      throw new Error('DB_URL / MONGODB_URI is missing. Set it before running the seed script.');
+    }
+
     await mongoose.connect(mongoUri);
     console.log('[Seed] Connected to MongoDB for database population...');
 
