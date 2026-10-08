@@ -1,4 +1,7 @@
-const BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+const DEFAULT_API_URL = import.meta.env.DEV
+  ? '/api'
+  : 'https://careconnect-wqts.onrender.com/api';
+const BASE_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/$/, '');
 
 export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('careconnect_token');
