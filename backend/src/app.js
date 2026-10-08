@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 
 const errorHandler = require('./middleware/errorHandler');
 
@@ -35,6 +36,16 @@ if (process.env.NODE_ENV !== 'production') {
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Root endpoint for Render/health checks and quick service verification
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    app: 'CareConnect API',
+    message: 'API is running. Use /api/health or /api/<resource> endpoints.',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -57,6 +68,29 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
+
+// Serve Frontend static build in production/monorepo deployment
+const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
+const altFrontendDistPath = path.resolve(__dirname, '../frontend/dist');
+
+const distPath = fs.existsSync(frontendDistPath)
+  ? frontendDistPath
+  : (fs.existsSync(altFrontendDistPath) ? altFrontendDistPath : null);
+
+if (distPath) {
+  app.use(express.static(distPath));
+
+  // SPA fallback for all non-API GET requests
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      const indexPath = path.join(distPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+      }
+    }
+    next();
+  });
+}
 
 // 404 handler for unknown routes
 app.use((req, res, next) => {

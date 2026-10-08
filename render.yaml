@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: careconnect
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_URL
+        value: mongodb+srv://rishi_sathwik:rishi2626@cluster0.o4pulwx.mongodb.net/CareConnect?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d

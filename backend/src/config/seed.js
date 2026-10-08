@@ -1,6 +1,11 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const dns = require('dns');
 const bcrypt = require('bcryptjs');
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+} catch (e) {}
 
 const User = require('../models/User');
 const ProviderProfile = require('../models/ProviderProfile');
@@ -15,16 +20,19 @@ const PricingRule = require('../models/PricingRule');
 const Notification = require('../models/Notification');
 const AuditLog = require('../models/AuditLog');
 
-const seedData = async () => {
+const seedData = async (options = {}) => {
+  const { closeOnComplete = (require.main === module) } = options;
   try {
-    const mongoUri = process.env.DB_URL || process.env.MONGODB_URI;
+    const mongoUri = process.env.DB_URL;
 
     if (!mongoUri) {
-      throw new Error('DB_URL / MONGODB_URI is missing. Set it before running the seed script.');
+      throw new Error('DB_URL is not defined. Set it in the backend .env file.');
     }
 
-    await mongoose.connect(mongoUri);
-    console.log('[Seed] Connected to MongoDB for database population...');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 10000 });
+      console.log('[Seed] Connected to MongoDB for database population...');
+    }
 
     // Clear existing collections
     await Promise.all([
@@ -780,12 +788,21 @@ const seedData = async () => {
     console.log('5. Customer:            customer@careconnect.com');
     console.log('---------------------------------------------------------');
 
-    await mongoose.connection.close();
-    process.exit(0);
+    if (closeOnComplete) {
+      await mongoose.connection.close();
+      process.exit(0);
+    }
   } catch (error) {
     console.error('[Seed Error]', error);
-    process.exit(1);
+    if (closeOnComplete) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 
-seedData();
+if (require.main === module) {
+  seedData({ closeOnComplete: true });
+}
+
+module.exports = seedData;
