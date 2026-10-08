@@ -1,7 +1,31 @@
-const DEFAULT_API_URL = import.meta.env.DEV
-  ? '/api'
-  : 'https://careconnect-wqts.onrender.com/api';
-const BASE_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/$/, '');
+const FALLBACK_PRODUCTION_API_URL = 'https://careconnect-wqts.onrender.com/api';
+
+function resolveBaseUrl() {
+  const envUrl = (import.meta.env.VITE_API_URL || '').trim();
+
+  // If envUrl is unset, empty, or still set to a template placeholder, fallback
+  if (
+    !envUrl ||
+    envUrl.includes('your-careconnect-render-url') ||
+    envUrl.includes('placeholder') ||
+    envUrl.includes('<') ||
+    envUrl === 'undefined'
+  ) {
+    return import.meta.env.DEV ? '/api' : FALLBACK_PRODUCTION_API_URL;
+  }
+
+  // Strip trailing slashes
+  let cleaned = envUrl.replace(/\/+$/, '');
+
+  // Express API routes are mounted under /api, so ensure the base URL ends with /api
+  if (cleaned.startsWith('http') && !cleaned.endsWith('/api')) {
+    cleaned = `${cleaned}/api`;
+  }
+
+  return cleaned;
+}
+
+const BASE_URL = resolveBaseUrl();
 
 export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('careconnect_token');
