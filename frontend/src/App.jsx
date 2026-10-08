@@ -5,7 +5,6 @@ import { ToastProvider } from './context/ToastContext';
 
 // Common Components
 import Navbar from './components/common/Navbar';
-import DemoRoleSwitcher from './components/common/DemoRoleSwitcher';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Public Pages
@@ -49,7 +48,7 @@ export default function App() {
     <ToastProvider>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-indigo-600 selection:text-white pb-24">
+          <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-indigo-600 selection:text-white">
             {/* Top Navigation */}
             <Navbar />
 
@@ -111,9 +110,6 @@ export default function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
-
-            {/* Floating 1-Click Demo Persona Switcher */}
-            <DemoRoleSwitcher />
           </div>
         </Router>
       </AuthProvider>

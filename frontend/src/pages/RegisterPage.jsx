@@ -219,7 +219,7 @@ export default function RegisterPage() {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <p className="text-[11px] text-slate-400">
-              Need immediate testing? Switch to pre-seeded admin/staff accounts using the Demo Persona Switcher docked below.
+              You can sign in with your credentials once your account is active.
             </p>
           </div>
         </div>

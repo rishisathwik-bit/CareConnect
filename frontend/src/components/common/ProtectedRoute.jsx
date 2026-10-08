@@ -32,7 +32,7 @@ export default function ProtectedRoute({ allowedRoles = [] }) {
             Your current role (<span className="font-semibold capitalize">{role}</span>) does not have permission to view this view.
           </p>
           <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-500 mb-6 text-left">
-            Tip: Use the <strong>Demo Persona Switcher</strong> at the bottom of the screen to switch to an authorized role.
+            Please sign in with an account that has access to this portal.
           </div>
           <Navigate to="/" />
         </div>
